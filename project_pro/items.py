@@ -11,7 +11,6 @@ import scrapy
 class ProjectProItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    header_url = scrapy.Field()
     title = scrapy.Field()
     content = scrapy.Field()
     time = scrapy.Field()
