@@ -4,10 +4,12 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-
+from spiders.utils import all_zb_data_dict
 
 class ProjectProPipeline(object):
     def process_item(self, item, spider):
         return item
 
+    def close_spider(self, spider):
+        print(all_zb_data_dict)
 

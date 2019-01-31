@@ -108,3 +108,4 @@ venv.bak/
 .gitignore
 .idea/encodings.xml
 .idea/vcs.xml
+.idea/inspectionProfiles/
