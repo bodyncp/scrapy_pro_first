@@ -46,6 +46,7 @@ class SpiderFirstSpider(scrapy.Spider):
         print('2',response.url)
         item = ProjectProItem()
         article_data = response.text
+        print(article_data)
 
         if re.search(key, article_data):
             public_func(re, key, time_key, article_data, grep_title, time_key_new, item)

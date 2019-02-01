@@ -6,4 +6,4 @@
 # @Software: PyCharm
 
 from scrapy import cmdline
-cmdline.execute("scrapy crawl spider_first --nolog".split())
+cmdline.execute("scrapy crawl spider_first".split())
