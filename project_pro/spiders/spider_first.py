@@ -36,12 +36,12 @@ class SpiderFirstSpider(scrapy.Spider):
             yield scrapy.Request(current_request_url_new, callback=self.parse_many_page)
 
     def parse_many_page(self, response):
-        print(response.url)
-        header_data = response.xpath("//div[@class='warpper']/div[@class='list-info']/div[@class='info']/ul/li/a/@href").extract()
-        print(header_data)
+
+        header_data_list = response.xpath("//div[@class='warpper']/div[@class='list-info']/div[@class='info']/ul/li/a/@href").extract()
         # 此时的header_data 是一个列表
-        article_url = desc_url + header_data
-        yield scrapy.Request(article_url, callback=self.parse_page)
+        for header_data in header_data_list:
+            article_url = desc_url + header_data
+            yield scrapy.Request(article_url, callback=self.parse_page)
 
     def parse_page(self, response):
         print('2',response.url)
