@@ -5,9 +5,18 @@
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import random, json
+from project_pro.spiders.utils import error_back
+from twisted.internet import defer
+from twisted.internet.error import TimeoutError, DNSLookupError, \
+    ConnectionRefusedError, ConnectionDone, ConnectError, \
+    ConnectionLost, TCPTimedOutError
+from twisted.web.client import ResponseFailed
+from scrapy.core.downloader.handlers.http11 import TunnelError
 from scrapy import signals
-import random
 from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.http.response.html import HtmlResponse
 
 
 class ProjectProDownloaderMiddleware(object):
@@ -57,6 +66,47 @@ class ProjectProDownloaderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
+# 自定义捕获错误URL
+class ProcessAllExceptionMiddleware(RetryMiddleware):
+    ALL_EXCEPTIONS = (defer.TimeoutError, TimeoutError, DNSLookupError,
+                      ConnectionRefusedError, ConnectionDone, ConnectError,
+                      ConnectionLost, TCPTimedOutError, ResponseFailed,
+                      IOError, TunnelError)
+
+    def process_response(self, request, response, spider):
+        # def process_response(self, request, response, spider):
+        #     if request.meta.get('dont_retry', False):
+        #         return response
+        #     if response.status in self.retry_http_codes:
+        #         reason = response_status_message(response.status)
+        #         # 删除该代理
+        #         self.delete_proxy(request.meta.get('proxy', False))
+        #         time.sleep(random.randint(3, 5))
+        #         self.logger.warning('返回值异常, 进行重试...')
+        #         return self._retry(request, reason, spider) or response
+        #     return response
+        # 捕获状态码为40x/50x的response
+        if response.status != 200:
+            # 随意封装，直接返回response，spider代码中根据url==''来处理response
+            error_back(response)
+            return response
+
+        # 其他状态码不处理
+        return response
+
+    # def process_exception(self, request, exception, spider):
+    #     # 捕获几乎所有的异常
+    #     if isinstance(exception, self.ALL_EXCEPTIONS):
+    #         # 在日志中打印异常类型
+    #         print('Got exception: %s' % (exception))
+    #         # 随意封装一个response，返回给spider
+    #         error_back(exception)
+    #         response = HtmlResponse(url='exception')
+    #         return response
+    #     error_back(exception)
+
+
+
 # 自定义一个ip更换下载中间件的类，实现process_request（处理中间件拦截的请求(ip代理吃)）
 # 对请求进行ip更换
 class Proxy(object):
@@ -83,7 +133,6 @@ class RandomUserAgetn(UserAgentMiddleware):
 
 
 
-
 # 这里可针对基于http和https分别存放在两个列表中
 # proxy_https_list = [
 #     '173.82.219.113:3128',
@@ -93,11 +142,11 @@ class RandomUserAgetn(UserAgentMiddleware):
 # ]
 
 proxy_http_list = [
+    "119.57.108.53:53281",
+    "58.249.55.222:9797",
+    "61.145.182.27:53281",
     "125.46.0.62:53281",
-    "58.243.50.184:53281",
-    "175.102.3.98:8089",
-    "222.185.130.80:9999",
-    "1.192.241.23:9999"
+    "101.89.132.131:80"
 ]
 
 user_agent_list = [

@@ -12,6 +12,7 @@ import json
 base_dir = os.path.dirname(os.path.dirname(__file__))
 all_zb_data_dict = []
 all_cj_data_dict = []
+error_list = []
 
 
 def public_func(re, key, time_key, article_data, grep_title, time_key_new, item):
@@ -27,5 +28,11 @@ def public_func(re, key, time_key, article_data, grep_title, time_key_new, item)
     item['content'] = data_content
     item['time'] = date_time
     all_zb_data_dict.append((data_title, data_content, date_time))
-    with open(os.path.join(base_dir, 'result', 'result.json'), 'w', encoding='utf-8') as fw:
-        fw.write(json.dumps(all_zb_data_dict))
+
+
+def error_back(response):
+    error_url = response.url
+    error_url_dict = {error_url: False}
+    error_list.append(error_url_dict)
+    with open(os.path.join(base_dir, 'result', 'error.json'), 'w+') as fw:
+        fw.write(json.dumps(error_list))
